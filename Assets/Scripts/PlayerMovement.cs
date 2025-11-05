@@ -1,3 +1,4 @@
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -7,6 +8,14 @@ public class PlayerMovement : MonoBehaviour
     private float jumps;
     public float Maxjumps;
     private bool isGrounded;
+    public float Dashforce;
+    private float Dashes;
+    public float Maxdashes;
+
+    private float inputHorizontal;
+    private float inputVertical;
+    private bool isfacingright;
+
 
     Rigidbody2D rb;
 
@@ -16,14 +25,53 @@ public class PlayerMovement : MonoBehaviour
         float move = Input.GetAxis("Horizontal") * movespeed * Time.deltaTime;
         transform.Translate(move, 0, 0);
         // jumping
-        if (Input.GetKeyDown("space") && jumps >= 1)
-        {
-            jumps--;
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce), ForceMode2D.Impulse);
-        }
         if (isGrounded == true && jumps != Maxjumps)
         {
             jumps = Maxjumps;
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && jumps >= 1)
+        {
+            jumps--;
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce), ForceMode2D.Impulse);
+            isGrounded = false;
+        }
+
+        // Dashes right
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Dashes >= 1 && isfacingright == true)
+        {
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(Dashforce, 0), ForceMode2D.Impulse);
+            Dashes--;
+        }
+        // Dashes left
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Dashes >= 1 && isfacingright == false)
+        {
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(-Dashforce, 0), ForceMode2D.Impulse);
+            Dashes--;
+        }
+        // resets Dashes if on ground
+        if (isGrounded == true && Dashes != Maxdashes)
+        {
+            Dashes = Maxdashes;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        // gets vertical and horizontal inputs
+        inputHorizontal = Input.GetAxisRaw("Horizontal");
+        inputVertical = Input.GetAxisRaw("Vertical");
+
+        // makes player face left if horizontal input less than 0
+        if (inputHorizontal < 0)
+        {
+            gameObject.transform.localScale = new Vector3(1, 1, 1);
+            isfacingright = false;
+        }
+        // makes player face right if horizontal input greater than 0
+        if (inputHorizontal > 0)
+        {
+            gameObject.transform.localScale = new Vector3(-1, 1, 1);
+            isfacingright = true;
         }
     }
 
@@ -40,7 +88,6 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
-            jumps--;
         }
     }
 
