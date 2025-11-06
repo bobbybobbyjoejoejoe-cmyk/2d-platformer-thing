@@ -1,3 +1,4 @@
+using System;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -18,6 +19,14 @@ public class PlayerMovement : MonoBehaviour
 
 
     Rigidbody2D rb;
+    Animator animator;
+
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+    }
 
     void Update()
     {
@@ -34,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
             jumps--;
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce), ForceMode2D.Impulse);
             isGrounded = false;
+            animator.SetBool("isJumping", !isGrounded);
         }
 
         // Dashes right
@@ -73,17 +83,22 @@ public class PlayerMovement : MonoBehaviour
             gameObject.transform.localScale = new Vector3(-1, 1, 1);
             isfacingright = true;
         }
+
+        // walking and jump animation values stuff
+        animator.SetFloat("xVelocity", Math.Abs(rb.linearVelocity.x));
+        animator.SetFloat("yVelocity", rb.linearVelocity.y);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(UnityEngine.Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
         }
+        animator.SetBool("isJumping", !isGrounded);
     }
 
-    void OnCollisionExit2D(Collision2D collision)
+    void OnTriggerExit2D(UnityEngine.Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
