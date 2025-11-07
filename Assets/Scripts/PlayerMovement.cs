@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     Animator animator;
 
 
-    private void Start()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -47,13 +47,13 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Dashes right
-        if (Input.GetKeyDown(KeyCode.LeftShift) && Dashes >= 1 && isfacingright == true)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Dashes >= 1 && isfacingright == false)
         {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(Dashforce, 0), ForceMode2D.Impulse);
             Dashes--;
         }
         // Dashes left
-        if (Input.GetKeyDown(KeyCode.LeftShift) && Dashes >= 1 && isfacingright == false)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Dashes >= 1 && isfacingright == true)
         {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(-Dashforce, 0), ForceMode2D.Impulse);
             Dashes--;
@@ -72,13 +72,13 @@ public class PlayerMovement : MonoBehaviour
         inputVertical = Input.GetAxisRaw("Vertical");
 
         // makes player face left if horizontal input less than 0
-        if (inputHorizontal < 0)
+        if (inputHorizontal > 0)
         {
             gameObject.transform.localScale = new Vector3(1, 1, 1);
             isfacingright = false;
         }
         // makes player face right if horizontal input greater than 0
-        if (inputHorizontal > 0)
+        if (inputHorizontal < 0)
         {
             gameObject.transform.localScale = new Vector3(-1, 1, 1);
             isfacingright = true;
